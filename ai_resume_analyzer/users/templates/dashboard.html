@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="auth-card" style="max-width: 900px;">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-0">Welcome, {{ request.user.username }}</h4>
+            <small class="text-muted">AI Resume Analyzer Dashboard</small>
+        </div>
+
+        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">
+            Logout
+        </a>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="border rounded p-3 text-center">
+                <h6 class="text-muted mb-1">Resume Status</h6>
+                {% if resume %}
+                    <span class="badge bg-success">Uploaded</span>
+                {% else %}
+                    <span class="badge bg-danger">Not Uploaded</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="border rounded p-3 text-center">
+                <h6 class="text-muted mb-1">Last Update</h6>
+                {% if resume %}
+                    <small>{{ resume.uploaded_at|date:"d M Y" }}, {{ resume.uploaded_at|time:"h:i A" }}</small>
+                {% else %}
+                    <small>—</small>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="border rounded p-3 text-center">
+                <h6 class="text-muted mb-1">Profile</h6>
+                <small>Active</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resume Section -->
+    <div class="border rounded p-4 mb-4">
+        <h5 class="mb-3">Your Resume</h5>
+
+        {% if resume %}
+            <p class="mb-2">
+                📄 <strong>{{ resume.file.name|cut:"resumes/" }}</strong>
+            </p>
+
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{% url 'view_resume' resume.id %}"
+                   target="_blank"
+                   class="btn btn-primary btn-custom">
+                    View Resume
+                </a>
+
+                <a href="{% url 'upload_resume' %}"
+                   class="btn btn-outline-secondary btn-custom">
+                    Replace Resume
+                </a>
+            </div>
+        {% else %}
+            <p class="text-muted">
+                You haven’t uploaded your resume yet.
+            </p>
+
+            <a href="{% url 'upload_resume' %}"
+               class="btn btn-primary btn-custom">
+                Upload Resume
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Next Steps Section -->
+    <div class="border rounded p-4">
+        <h5 class="mb-3">Next Steps</h5>
+
+        <ul class="mb-0">
+            <li>Upload or update your resume</li>
+            <li>Analyze resume skills (next phase)</li>
+            <li>Get job recommendations</li>
+        </ul>
+    </div>
+
+</div>
+
+{% endblock %}

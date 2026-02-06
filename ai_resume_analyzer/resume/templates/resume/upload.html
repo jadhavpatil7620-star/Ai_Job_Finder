@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="auth-card">
+    <h3 class="auth-title">Upload Resume</h3>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            {{ form.file.label_tag }}
+            {{ form.file }}
+            {% if form.file.errors %}
+                <div class="text-danger small">
+                    {{ form.file.errors|striptags }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-custom">
+                Upload Resume
+            </button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
