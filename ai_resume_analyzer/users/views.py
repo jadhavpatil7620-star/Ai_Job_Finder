@@ -3,7 +3,9 @@ from django.contrib.auth import login,logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import RegisterForm
 from resume.models import Resume
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from resume.models import Resume,Job,Skill
 from resume.matcher import calculate_job_match
 
@@ -78,3 +80,13 @@ def dashboard(request):
         'job_matches':job_matches,
         'categarized_skill':categarized_skill
     })
+
+@staff_member_required
+def admin_dashboard(request):
+    context={
+        'total_users':User.objects.count(),
+        'total_resumes':Resume.objects.count(),
+        'total_jobs':Job.objects.count(),
+        'total_skills':Skill.objects.count(),
+    }
+    return render(request,'admin_dashboard.html',context)
