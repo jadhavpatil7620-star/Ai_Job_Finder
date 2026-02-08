@@ -1,141 +1,141 @@
-{% extends 'base.html' %} {% block content %}
+{% extends "base.html" %}
+{% block content %}
 
-<div class="auth-card" style="max-width: 900px">
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h4 class="mb-0">Welcome, {{ request.user.username }}</h4>
-      <small class="text-muted">AI Resume Analyzer Dashboard</small>
-    </div>
+<div class="container mt-4" style="max-width: 1000px">
 
-    <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">
-      Logout
-    </a>
-  </div>
+  <div class="dashboard-card p-4">
 
-  <!-- Stats Section -->
-  <div class="row mb-4">
-    <div class="col-md-4">
-      <div class="border rounded p-3 text-center">
-        <h6 class="text-muted mb-1">Resume Status</h6>
-        {% if resume %}
-        <span class="badge bg-success">Uploaded</span>
-        {% else %}
-        <span class="badge bg-danger">Not Uploaded</span>
-        {% endif %}
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h4 class="mb-0">Welcome, {{ request.user.username }}</h4>
+        <small class="text-muted">AI Resume Analyzer Dashboard</small>
       </div>
-    </div>
 
-    <div class="col-md-4">
-      <div class="border rounded p-3 text-center">
-        <h6 class="text-muted mb-1">Last Update</h6>
-        {% if resume %}
-        <small
-          >{{ resume.uploaded_at|date:"d M Y" }}, {{
-          resume.uploaded_at|time:"h:i A" }}</small
-        >
-        {% else %}
-        <small>—</small>
-        {% endif %}
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="border rounded p-3 text-center">
-        <h6 class="text-muted mb-1">Profile</h6>
-        <small>Active</small>
-      </div>
-    </div>
-  </div>
-
-  <!-- Resume Section -->
-  <div class="border rounded p-4 mb-4">
-    <h5 class="mb-3">Your Resume</h5>
-
-    {% if resume %}
-    <p class="mb-2">
-      📄 <strong>{{ resume.file.name|cut:"resumes/" }}</strong>
-    </p>
-
-    <div class="d-flex flex-wrap gap-2">
-      <a
-        href="{% url 'view_resume' resume.id %}"
-        target="_blank"
-        class="btn btn-primary btn-custom"
-      >
-        View Resume
-      </a>
-
-      <a
-        href="{% url 'upload_resume' %}"
-        class="btn btn-outline-secondary btn-custom"
-      >
-        Replace Resume
+      <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">
+        Logout
       </a>
     </div>
-    {% else %}
-    <p class="text-muted">You haven’t uploaded your resume yet.</p>
 
-    <a href="{% url 'upload_resume' %}" class="btn btn-primary btn-custom">
-      Upload Resume
-    </a>
-    {% endif %}
-  </div>
-  {% if job_matches %}
-  <hr />
-  <h5 class="mb-3">Matching Jobs</h5>
+    <!-- STATS -->
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <div class="dashboard-card p-3 text-center">
+          <h6 class="text-muted mb-1">Resume Status</h6>
+          {% if resume %}
+            <span class="badge bg-success">Uploaded</span>
+          {% else %}
+            <span class="badge bg-danger">Not Uploaded</span>
+          {% endif %}
+        </div>
+      </div>
 
-  {% for item in job_matches %}
-  <div class="border rounded p-3 mb-3">
-    <div class="d-flex justify-content-between">
-      <strong>{{ item.job.title }}</strong>
-      <span class="badge bg-success"> {{ item.match }}% Match </span>
+      <div class="col-md-4">
+        <div class="dashboard-card p-3 text-center">
+          <h6 class="text-muted mb-1">Last Update</h6>
+          {% if resume %}
+            <small>
+              {{ resume.uploaded_at|date:"d M Y" }},
+              {{ resume.uploaded_at|time:"h:i A" }}
+            </small>
+          {% else %}
+            <small>—</small>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="dashboard-card p-3 text-center">
+          <h6 class="text-muted mb-1">Profile</h6>
+          <small>Active</small>
+        </div>
+      </div>
     </div>
 
-    <small class="text-muted">
-      Matching skills: 
-      {% for skill in item.matched_skills %} 
-      {{ skill }}
-      {% if not forloop.last %}, 
-      {% endif %} 
-      {% endfor %}
-      <small class="text-muted">
-        {{ item.job.get_experience_level_display }} | {{
-        item.job.get_role_type_display }}
-      </small>
-    </small>
-  </div>
-  {% endfor %} {% else %}
-  <p class="text-muted">No matching jobs found yet.</p>
-  {% endif %}
+    <!-- RESUME -->
+    <div class="dashboard-card p-4 mb-4">
+      <h5 class="section-title">Your Resume</h5>
 
-  <!-- Next Steps Section -->
-  <div class="border rounded p-4">
-    <h5 class="mb-3">Next Steps</h5>
+      {% if resume %}
+        <p>
+          📄 <strong>{{ resume.file.name|cut:"resumes/" }}</strong>
+        </p>
 
-    <ul class="mb-0">
-      <li>Upload or update your resume</li>
-      <li>Analyze resume skills (next phase)</li>
-      <li>Get job recommendations</li>
-    </ul>
-  </div>
-</div>
-{% if resume and categorized_skills %}
-<hr />
-<h5 class="mb-3">Skill Overview</h5>
+        <a href="{% url 'view_resume' resume.id %}" class="btn btn-primary btn-sm">
+          View Resume
+        </a>
 
-<div class="row">
-  {% for category, skills in categorized_skills.items %} {% if skills %}
-  <div class="col-md-6 mb-3">
-    <div class="border rounded p-3">
-      <strong>{{ category }}</strong>
-      <div class="mt-2 d-flex flex-wrap gap-2">
-        {% for skill in skills %}
-        <span class="badge bg-secondary">{{ skill }}</span>
+        <a href="{% url 'upload_resume' %}" class="btn btn-outline-secondary btn-sm">
+          Replace Resume
+        </a>
+      {% else %}
+        <p class="text-muted">No resume uploaded yet.</p>
+        <a href="{% url 'upload_resume' %}" class="btn btn-primary btn-sm">
+          Upload Resume
+        </a>
+      {% endif %}
+    </div>
+
+    <!-- JOB MATCHES -->
+    {% if job_matches %}
+    <hr>
+    <h5 class="section-title">Recommended Jobs</h5>
+
+    {% for item in job_matches %}
+    <div class="dashboard-card job-card p-3 mb-3">
+      <div class="d-flex justify-content-between">
+        <div>
+          <div class="job-title">{{ item.job.title }}</div>
+          <div class="job-meta">
+            {{ item.job.get_experience_level_display }} ·
+            {{ item.job.get_role_type_display }}
+          </div>
+        </div>
+
+        <span class="badge bg-success">{{ item.match }}% Match</span>
+      </div>
+
+      <div class="mt-3">
+        <strong class="job-meta">Matched Skills</strong><br>
+        {% for skill in item.matched_skills %}
+          <span class="skill-chip">{{ skill }}</span>
         {% endfor %}
       </div>
+
+      {% if item.missing_skills %}
+      <div class="mt-3">
+        <strong class="job-meta">Skills to Improve</strong><br>
+        {% for skill in item.missing_skills %}
+          <span class="skill-chip bg-warning text-dark">{{ skill }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
     </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- SKILLS -->
+    {% if categorized_skills %}
+    <hr>
+    <h5 class="section-title">Your Skills</h5>
+
+    <div class="row">
+      {% for category, skills in categorized_skills.items %}
+      {% if skills %}
+      <div class="col-md-6 mb-3">
+        <div class="dashboard-card p-3">
+          <strong>{{ category }}</strong><br>
+          {% for skill in skills %}
+            <span class="skill-chip">{{ skill }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
   </div>
-  {% endif %} {% endfor %}
 </div>
-{% endif %} {% endblock %}
+
+{% endblock %}
