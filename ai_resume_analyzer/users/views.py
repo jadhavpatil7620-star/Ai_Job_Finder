@@ -37,23 +37,19 @@ def logout_view(request):
 @login_required
 def dashboard(request):
     resume=Resume.objects.filter(user=request.user).last()
-    return render(request,'dashboard.html',{'resume':resume})
-
-@login_required
-def dashboard(request):
-    resume=Resume.objects.filter(user=request.user).last()
     job_matches=[]
     
     if resume and resume.extracted_skills:
         resume_skills=[s.strip().lower() for s in resume.extracted_skills.split(',')]
         
         for job in Job.objects.all():
-            match_percentege,matched_skills=calculate_job_match(resume_skills,job)
+            match_percentege,matched_skills,missing_skills=calculate_job_match(resume_skills,job)
             if match_percentege>0:
                 job_matches.append({
                     'job':job,
                     'match':match_percentege,
-                    'matched_skills':matched_skills
+                    'matched_skills':matched_skills,
+                    'missing_skills':missing_skills,
                 })
                 
         job_matches.sort(key=lambda x:x['match'],reverse=True)
