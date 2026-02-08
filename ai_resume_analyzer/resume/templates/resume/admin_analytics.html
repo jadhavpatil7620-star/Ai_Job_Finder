@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Analytics</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background: #f4f4f4; }
+    </style>
+</head>
+<body>
+
+<h2>Resume & Skill Analytics</h2>
+
+<p><strong>Total Resumes:</strong> {{ total_resumes }}</p>
+<p><strong>Total Skills:</strong> {{ total_skills }}</p>
+
+<h3>Skill Usage</h3>
+
+<table>
+    <tr>
+        <th>Skill</th>
+        <th>Used In Resumes</th>
+    </tr>
+
+    {% for skill, count in skill_usage.items %}
+    <tr>
+        <td>{{ skill }}</td>
+        <td>{{ count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

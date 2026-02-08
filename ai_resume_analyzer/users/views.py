@@ -4,6 +4,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import RegisterForm
 from resume.models import Resume
 from django.contrib.auth.decorators import login_required
+from resume.models import Resume,Job,Skill
+from resume.matcher import calculate_job_match
 
 # Create your views here.
 def register_view(request):
@@ -36,3 +38,47 @@ def logout_view(request):
 def dashboard(request):
     resume=Resume.objects.filter(user=request.user).last()
     return render(request,'dashboard.html',{'resume':resume})
+
+@login_required
+def dashboard(request):
+    resume=Resume.objects.filter(user=request.user).last()
+    job_matches=[]
+    
+    if resume and resume.extracted_skills:
+        resume_skills=[s.strip().lower() for s in resume.extracted_skills.split(',')]
+        
+        for job in Job.objects.all():
+            match_percentege,matched_skills=calculate_job_match(resume_skills,job)
+            if match_percentege>0:
+                job_matches.append({
+                    'job':job,
+                    'match':match_percentege,
+                    'matched_skills':matched_skills
+                })
+                
+        job_matches.sort(key=lambda x:x['match'],reverse=True)
+    categarized_skill={
+        'Programing Language':[],
+        'Framework':[],
+        'Database':[],
+        'Tool':[],
+    }
+    db_skills=Skill.objects.none()
+    if resume and resume.extracted_skills:
+        resume_skills_names=[s.strip().lower() for s in resume.extracted_skills.split(',')]
+        db_skills=Skill.objects.filter(name__in=resume_skills_names)
+        
+    for skill in db_skills:
+        if skill.category_choice=='language':
+            categarized_skill['Programing Language'].append(skill.name)
+        elif skill.category_choice=='framework':
+            categarized_skill['Framework'].append(skill.name)
+        elif skill.category_choice=='database':
+            categarized_skill['Database'].append(skill.name)
+        elif skill.category_choice=='tool':
+            categarized_skill['Tool'].append(skill.name)
+    return render(request,'dashboard.html',{
+        'resume':resume,
+        'job_matches':job_matches,
+        'categarized_skill':categarized_skill
+    })
