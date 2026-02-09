@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from resume.models import Resume,Job,Skill
 from resume.matcher import calculate_job_match
+from django.contrib import messages
 
 # Create your views here.
 def register_view(request):
@@ -27,7 +28,13 @@ def login_view(request):
         if form.is_valid():
             user=form.get_user()
             login(request,user)
-            return redirect('dashboard')
+            
+            if user.is_staff:
+                return redirect('admin_dashboard')
+            else:
+                return redirect('dashboard')
+        else:
+            messages.error(request,"Invalid username or password")
     else:
         form=AuthenticationForm()
     return render(request,'users/login.html',{'form':form})
@@ -88,5 +95,7 @@ def admin_dashboard(request):
         'total_resumes':Resume.objects.count(),
         'total_jobs':Job.objects.count(),
         'total_skills':Skill.objects.count(),
+        'recent_users':User.objects.order_by('-date_joined')[:5],
+        'recent_jobs':Job.objects.order_by('-created_at')[:5]
     }
     return render(request,'admin_dashboard.html',context)
