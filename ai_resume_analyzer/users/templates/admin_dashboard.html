@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4" style="max-width:1100px">
+
+  <!-- ===== TOP BAR ===== -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="mb-0">HR Admin Dashboard</h4>
+      <small class="text-muted">
+        Recruitment system overview
+      </small>
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+      <span class="text-muted small">
+        👤 {{ request.user.username }}
+      </span>
+      <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">
+        Logout
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== KPI STATS ===== -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="dashboard-card p-3 text-center stat-card">
+        <h6>Total Candidates</h6>
+        <h3>{{ total_users }}</h3>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="dashboard-card p-3 text-center stat-card">
+        <h6>Resumes Uploaded</h6>
+        <h3>{{ total_resumes }}</h3>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="dashboard-card p-3 text-center stat-card">
+        <h6>Active Job Openings</h6>
+        <h3>{{ total_jobs }}</h3>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="dashboard-card p-3 text-center stat-card">
+        <h6>Skill Library</h6>
+        <h3>{{ total_skills }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MANAGEMENT ===== -->
+  <div class="dashboard-card p-4 mb-4">
+    <h5 class="section-title">Recruitment Management</h5>
+    <small class="text-muted d-block mb-3">
+      Administrative actions & system control
+    </small>
+
+    <div class="d-flex flex-wrap gap-2">
+      <a href="/admin/resume/job/" class="btn btn-primary btn-sm">
+        📌 Manage Job Openings
+      </a>
+      <a href="/admin/resume/skill/" class="btn btn-outline-primary btn-sm">
+        🛠 Manage Skill Library
+      </a>
+      <a href="/admin/auth/user/" class="btn btn-outline-secondary btn-sm">
+        👥 Manage Candidates
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== OPERATIONS ===== -->
+  <div class="row">
+    <!-- Candidates -->
+    <div class="col-md-7">
+      <div class="dashboard-card p-4 h-100">
+        <h5 class="section-title">Recent Candidates</h5>
+        <small class="text-muted d-block mb-3">
+          Newly registered applicants
+        </small>
+
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Candidate</th>
+              <th>Registered On</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in recent_users %}
+            <tr>
+              <td>{{ user.username }}</td>
+              <td>{{ user.date_joined|date:"d M Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="2" class="text-muted">
+                No candidates found
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Jobs -->
+    <div class="col-md-5">
+      <div class="dashboard-card p-4 h-100">
+        <h5 class="section-title">Recent Job Postings</h5>
+        <small class="text-muted d-block mb-3">
+          Latest openings published
+        </small>
+
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Job Role</th>
+              <th>Posted On</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for job in recent_jobs %}
+            <tr>
+              <td>{{ job.title }}</td>
+              <td>{{ job.created_at|date:"d M Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="2" class="text-muted">
+                No jobs posted
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="text-center text-muted small mt-5">
+    AI Resume Analyzer • HR Admin Panel
+  </div>
+
+</div>
+
+{% endblock %}
